@@ -1,8 +1,8 @@
-
-CC = g++
-CC_FLAGS = -w -std=gnu++14
+#CC = g++
+CC = clang++
+CC_FLAGS = -Wall -Wextra -std=gnu++14 -O0 -g -Iinclude
 EXEC = blackjack
-SOURCES = $(wildcard *.cpp)
+SOURCES = $(wildcard src/*.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 
 $(EXEC): $(OBJECTS)
@@ -12,4 +12,4 @@ $(EXEC): $(OBJECTS)
 	$(CC) -c $(CC_FLAGS) $< -o $@
 
 clean:
-	rm -f $(EXEC) $(OBJECTS)
+	rm -f $(EXEC) $(OBJECTS) include/*~ src/*~
