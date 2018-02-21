@@ -79,7 +79,7 @@ namespace std
   {
     if (shoe.needToShuffle())
     {
-      shoe.shuffle();
+      shoe.newRegular();
     }
 
     playerHands = {};
@@ -99,28 +99,19 @@ namespace std
     dealerHand.dealCard();
     playerHand->dealCard();
 
-    if (dealerHand.upCardIsAce())
+    if (dealerHand.upCardIsAce() && !playerHand->isBlackjack())
     {
       drawHands();
       askInsurance();
       return;
     }
 
-    if (dealerHand.isDone())
-    {
-      dealerHand.hideDownCard = false;
-    }
-
     if (playerHand->isDone())
     {
       dealerHand.hideDownCard = false;
-    }
-
-    if (dealerHand.isDone() || playerHand->isDone())
-    {
       payHands();
       drawHands();
-      drawPlayerBetOptions();
+      betOptions();
       return;
     }
 
@@ -144,9 +135,9 @@ namespace std
     }
   }
 
-  void Game::drawPlayerBetOptions()
+  void Game::betOptions()
   {
-    cout << " (D) Deal Hand  (B) Change Bet  (Q) Quit" << endl;
+    cout << " (D) Deal Hand  (B) Change Bet  (O) Options  (Q) Quit" << endl;
 
     bool br = false;
     char myChar = { 0 };
@@ -165,6 +156,10 @@ namespace std
           br = true;
           getNewBet();
           break;
+        case 'o':
+	  br = true;
+	  gameOptions();
+	  break;
         case 'q':
           clear();
           br = true;
@@ -173,11 +168,110 @@ namespace std
           br = true;
           clear();
           drawHands();
-          drawPlayerBetOptions();
+          betOptions();
       }
 
       if (br)
       {
+        break;
+      }
+    }
+  }
+
+  void Game::gameOptions()
+  {
+    bool br = false;
+    char myChar = { 0 };
+
+    clear();
+    drawHands();
+    cout << " (N) Number of Decks  (T) Deck Type  (B) Back" << endl;
+
+    while(true)
+    {
+      myChar = getchar();
+
+      switch(myChar)
+      {
+        case 'n':
+          br = true;
+          getNewNumDecks();
+          break;
+        case 't':
+          br = true;
+          getNewDeckType();
+          break;
+        case 'b':
+	  br = true;
+	  clear();
+	  drawHands();
+	  betOptions();
+	  break;
+        default:
+          br = true;
+          clear();
+          drawHands();
+          gameOptions();
+      }
+
+      if (br)
+      {
+        break;
+      }
+    }
+  }
+
+  void Game::getNewDeckType()
+  {
+
+    bool br = false;
+    char myChar = { 0 };
+
+    clear();
+    drawHands();
+    cout << " (1) Regular  (2) Aces  (3) Jacks  (4) Aces & Jacks  (5) Sevens  (6) Eights" << endl;
+
+    while(true)
+    {
+      myChar = getchar();
+
+      switch(myChar)
+      {
+        case '1':
+          br = true;
+          shoe.newRegular();
+          break;
+        case '2':
+          br = true;
+          shoe.newAces();
+          break;
+        case '3':
+          br = true;
+          shoe.newJacks();
+          break;
+        case '4':
+          br = true;
+          shoe.newAcesJacks();
+          break;
+        case '5':
+          br = true;
+          shoe.newSevens();
+          break;
+        case '6':
+          br = true;
+          shoe.newEights();
+          break;
+        default:
+          br = true;
+          clear();
+          drawHands();
+          gameOptions();
+      }
+
+      if (br)
+      {
+	drawHands();
+	betOptions();
         break;
       }
     }
@@ -198,6 +292,22 @@ namespace std
     dealNewHand();
   }
 
+  void Game::getNewNumDecks()
+  {
+    clear();
+    drawHands();
+
+    cout << "  Number Of Decks: " << numDecks << endl << "  Enter New Number Of Decks: ";
+    unsigned tmp;
+    cin >> tmp;
+
+    if(tmp < 1) tmp = 1;
+    if(tmp > 8) tmp = 8;
+
+    numDecks = tmp;
+    gameOptions();
+  }
+
   void Game::insureHand()
   {
     PlayerHand *h = &playerHands[currentPlayerHand];
@@ -210,7 +320,7 @@ namespace std
     money -= h->bet;
 
     drawHands();
-    drawPlayerBetOptions();
+    betOptions();
   }
 
   bool Game::moreHandsToPlay()
@@ -242,7 +352,7 @@ namespace std
 
       payHands();
       drawHands();
-      drawPlayerBetOptions();
+      betOptions();
       return;
     }
 
@@ -251,7 +361,7 @@ namespace std
     {
       playDealerHand();
       drawHands();
-      drawPlayerBetOptions();
+      betOptions();
       return;
     }
 

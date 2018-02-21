@@ -152,7 +152,7 @@ namespace std
 
     game->playDealerHand();
     game->drawHands();
-    game->drawPlayerBetOptions();
+    game->betOptions();
   }
 
   void PlayerHand::process()
@@ -165,7 +165,7 @@ namespace std
 
     game->playDealerHand();
     game->drawHands();
-    game->drawPlayerBetOptions();
+    game->betOptions();
   }
 
   void PlayerHand::draw(unsigned index)
