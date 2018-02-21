@@ -35,7 +35,7 @@ namespace std
 
   bool Card::isTen()
   {
-    return value > 9;
+    return value > 8;
   }
 
   Card::~Card()
