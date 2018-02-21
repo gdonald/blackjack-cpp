@@ -50,7 +50,10 @@ namespace std
       void insureHand();
       void noInsurance();
       void payHands();
-      void drawPlayerBetOptions();
+      void betOptions();
+      void gameOptions();
+      void getNewNumDecks();
+      void getNewDeckType();
       void getNewBet();
       void normalizeCurrentBet();
       void saveGame();

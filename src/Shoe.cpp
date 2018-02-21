@@ -44,8 +44,6 @@ namespace std
   
   void Shoe::shuffle()
   {
-    newRegular();
-    
     for(unsigned i = 0; i < 7; ++i)
     {
       random_shuffle(cards.begin(), cards.end());
@@ -56,7 +54,7 @@ namespace std
   {
     cards.clear();
     
-    for(unsigned deck = 0; deck < numDecks * 5 * 13; ++deck)
+    for(unsigned deck = 0; deck < numDecks * 4; ++deck)
     {
       for(unsigned suite = 0; suite < 4; ++suite)
       {
@@ -64,13 +62,15 @@ namespace std
 	cards.push_back(Card(10, suite));
       }
     }
+
+    shuffle();
   }
   
   void Shoe::newJacks()
   {
     cards.clear();
     
-    for(unsigned deck = 0; deck < numDecks * 5 * 13; ++deck)
+    for(unsigned deck = 0; deck < numDecks * 5; ++deck)
     {
       for(unsigned suite = 0; suite < 4; ++suite)
       {
@@ -83,7 +83,7 @@ namespace std
   {
     cards.clear();
     
-    for(unsigned deck = 0; deck < numDecks * 5 * 13; ++deck)
+    for(unsigned deck = 0; deck < numDecks * 5; ++deck)
     {
       for(unsigned suite = 0; suite < 4; ++suite)
       {
@@ -96,7 +96,7 @@ namespace std
   {
     cards.clear();
     
-    for(unsigned deck = 0; deck < numDecks * 5 * 13; ++deck)
+    for(unsigned deck = 0; deck < numDecks * 5; ++deck)
     {
       for(unsigned suite = 0; suite < 4; ++suite)
       {
@@ -109,7 +109,7 @@ namespace std
   {
     cards.clear();
     
-    for(unsigned deck = 0; deck < numDecks * 5 * 13; ++deck)
+    for(unsigned deck = 0; deck < numDecks * 5; ++deck)
     {
       for(unsigned suite = 0; suite < 4; ++suite)
       {
@@ -132,6 +132,8 @@ namespace std
 	}
       }
     }
+
+    shuffle();
   }
   
   Card Shoe::getNextCard()
