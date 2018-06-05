@@ -7,4 +7,4 @@ Console Blackjack in C++
 ## Run
     ./blackjack
 
-![Blackjack](https://raw.githubusercontent.com/gdonald/blackjack-cpp/master/bj.png)
+![Blackjack](https://gitlab.com/gdonald/blackjack-cpp/raw/master/bj.png)
