@@ -85,7 +85,7 @@ namespace std
       return false;
     }
 
-    if (stood || cards.size() != 2 || isBusted() || isBlackjack())
+    if (stood || cards.size() != 2 || isBlackjack())
     {
       return false;
     }
