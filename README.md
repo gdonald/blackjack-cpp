@@ -1,10 +1,11 @@
-# blackjack-cpp
-Console Blackjack in C++
+## blackjack-cpp
+Console Blackjack written in C++
 
-## Build
+### Build
+    cmake .
     make
 
-## Run
+### Run
     ./blackjack
 
 ![Blackjack](https://raw.githubusercontent.com/gdonald/blackjack-cpp/master/bj.png)

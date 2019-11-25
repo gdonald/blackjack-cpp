@@ -44,9 +44,12 @@ namespace std
   
   void Shoe::shuffle()
   {
+    std::random_device rng;
+    std::mt19937 urng(rng());
+
     for(unsigned i = 0; i < 7; ++i)
     {
-      random_shuffle(cards.begin(), cards.end());
+      std::shuffle(cards.begin(), cards.end(), urng);
     }
   }
   
