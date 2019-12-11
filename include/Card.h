@@ -1,29 +1,25 @@
-#ifndef CARD_H_
-#define CARD_H_
+#ifndef CARD_H
+#define CARD_H
 
 #include <string>
 #include <sstream>
 
-namespace std
-{
-  class Card
-  {
-    public:
-      static const char * const faces[14][4];
-      static const char * const suites[4];
+class Card {
+public:
+  static const char *const faces[14][4];
 
-      int value;
-      int suiteValue;
+  unsigned value{};
+  unsigned suiteValue{};
 
-      Card();
-      Card(int, int);
-      virtual ~Card();
+  Card(unsigned v, unsigned sv);
 
-      bool isAce();
-      bool isTen();
+  ~Card();
 
-      string toString();
-  };
-}
+  bool isAce();
+
+  bool isTen();
+
+  std::string toString();
+};
 
 #endif

@@ -1,298 +1,192 @@
 #include "PlayerHand.h"
 #include "Game.h"
 
-namespace std
-{
-  unsigned PlayerHand::totalPlayerHands = 0;
+unsigned PlayerHand::totalPlayerHands = 0;
 
-  bool PlayerHand::isBusted()
-  {
-    return getValue(Soft) > 21;
-  }
-  
-  unsigned PlayerHand::getValue(CountMethod countMethod)
-  {
-    unsigned v = 0;
-    unsigned total = 0;
+PlayerHand::~PlayerHand() = default;
 
-    for(unsigned x = 0; x < cards.size(); ++x)
-    {
-      unsigned tmp_v = cards.at(x).value + 1;
-      v = tmp_v > 9 ? 10 : tmp_v;
+PlayerHand::PlayerHand(Game *g) : Hand(g) {
+  status = Unknown;
+}
 
-      if (countMethod == Soft && v == 1 && total < 11)
-      {
-        v = 11;
-      }
+bool PlayerHand::isBusted() {
+  return getValue(Soft) > 21;
+}
 
-      total += v;
+unsigned PlayerHand::getValue(CountMethod countMethod) {
+  unsigned v = 0;
+  unsigned total = 0;
+
+  for (auto &card : cards) {
+    unsigned tmp_v = card.value + 1;
+    v = tmp_v > 9 ? 10 : tmp_v;
+
+    if (countMethod == Soft && v == 1 && total < 11) {
+      v = 11;
     }
 
-    if (countMethod == Soft && total > 21)
-    {
-      return getValue(Hard);
-    }
-
-    return total;
+    total += v;
   }
 
-  bool PlayerHand::isDone()
-  {
-    if (played || stood || isBlackjack() || isBusted() || 21 == getValue(Soft) || 21 == getValue(Hard))
-    {
-      played = true;
+  if (countMethod == Soft && total > 21) {
+    return getValue(Hard);
+  }
 
-      if (!payed)
-      {
-        if (isBusted())
-        {
-          payed = true;
-          status = Lost;
-          game->money -= bet;
-        }
+  return total;
+}
+
+bool PlayerHand::isDone() {
+  if (played || stood || isBlackjack() || isBusted() || 21 == getValue(Soft) || 21 == getValue(Hard)) {
+    played = true;
+
+    if (!payed) {
+      if (isBusted()) {
+        payed = true;
+        status = Lost;
+        game->money -= bet;
       }
-
-      return true;
     }
 
+    return true;
+  }
+
+  return false;
+}
+
+bool PlayerHand::canSplit() {
+  if (stood || PlayerHand::totalPlayerHands >= PlayerHand::MAX_PLAYER_HANDS) {
     return false;
   }
 
-  bool PlayerHand::canSplit()
-  {
-    if (stood || PlayerHand::totalPlayerHands >= PlayerHand::MAX_PLAYER_HANDS)
-    {
-      return false;
-    }
+  if (game->money < game->allBets() + bet) { return false; }
 
-    if(game->money < game->allBets() + bet)
-    {
-      return false;
-    }
+  return cards.size() == 2 && cards[0].value == cards[1].value;
+}
 
-    if (cards.size() == 2 && cards[0].value == cards[1].value)
-    {
-      return true;
-    }
+bool PlayerHand::canDbl() {
+  if (game->money < game->allBets() + bet) { return false; }
+  return !(stood || cards.size() != 2 || isBlackjack());
+}
 
-    return false;
+bool PlayerHand::canStand() {
+  return !(stood || isBusted() || isBlackjack());
+}
+
+bool PlayerHand::canHit() {
+  return !(played || stood || 21 == getValue(Hard) || isBlackjack() || isBusted());
+}
+
+void PlayerHand::hit() {
+  dealCard();
+
+  if (isDone()) {
+    process();
+    return;
   }
 
-  bool PlayerHand::canDbl()
-  {
-    if(game->money < game->allBets() + bet)
-    {
-      return false;
-    }
+  game->drawHands();
+  game->playerHands.at(game->currentPlayerHand).getAction();
+}
 
-    if (stood || cards.size() != 2 || isBlackjack())
-    {
-      return false;
-    }
+void PlayerHand::dbl() {
+  dealCard();
+  played = true;
+  bet *= 2;
 
-    return true;
+  if (isDone()) { process(); }
+}
+
+void PlayerHand::stand() {
+  stood = true;
+  played = true;
+
+  if (game->moreHandsToPlay()) {
+    game->playMoreHands();
+    return;
   }
 
-  bool PlayerHand::canStand()
-  {
-    if (stood || isBusted() || isBlackjack())
-    {
-      return false;
-    }
+  game->playDealerHand();
+  game->drawHands();
+  game->betOptions();
+}
 
-    return true;
+void PlayerHand::process() {
+  if (game->moreHandsToPlay()) {
+    game->playMoreHands();
+    return;
   }
 
-  bool PlayerHand::canHit()
-  {
-    if (played || stood || 21 == getValue(Hard) || isBlackjack() || isBusted())
-    {
-      return false;
-    }
+  game->playDealerHand();
+  game->drawHands();
+  game->betOptions();
+}
 
-    return true;
+void PlayerHand::draw(unsigned index) {
+  std::cout << " ";
+
+  for (auto &card : cards) {
+    std::cout << card.toString() << " ";
   }
 
-  void PlayerHand::hit()
-  {
-    dealCard();
+  std::cout << " ⇒  " << getValue(Soft) << "  ";
 
-    if (isDone())
-    {
-      process();
-      return;
-    }
+  if (status == Hand::Lost) { std::cout << "-"; }
+  else if (status == Hand::Won) { std::cout << "+"; }
 
-    game->drawHands();
-    game->playerHands.at(game->currentPlayerHand).getAction();
+  std::cout << std::fixed << std::setprecision(2);
+  std::cout << "$" << (float) (bet / 100.0);
+
+  if (!played && index == game->currentPlayerHand) {
+    std::cout << " ⇐";
   }
 
-  void PlayerHand::dbl()
-  {
-    dealCard();
-    played = true;
-    bet *= 2;
+  std::cout << "  ";
 
-    if (isDone())
-    {
-      process();
-    }
+  if (status == Lost) {
+    if (isBusted()) { std::cout << "Busted!"; }
+    else { std::cout << "Lose!"; }
+  } else if (status == Won) {
+    if (isBlackjack()) { std::cout << "Blackjack!"; }
+    else { std::cout << "Won!"; }
+  } else if (status == Push) {
+    std::cout << "Push";
   }
 
-  void PlayerHand::stand()
-  {
-    stood = true;
-    played = true;
+  std::cout << std::endl << std::endl;
+}
 
-    if (game->moreHandsToPlay())
-    {
-      game->playMoreHands();
-      return;
-    }
+void PlayerHand::getAction() {
+  std::cout << " ";
+  if (canHit()) { std::cout << "(H) Hit  "; }
+  if (canStand()) { std::cout << "(S) Stand  "; }
+  if (canSplit()) { std::cout << "(P) Split  "; }
+  if (canDbl()) { std::cout << "(D) Double  "; }
+  std::cout << std::endl;
 
-    game->playDealerHand();
-    game->drawHands();
-    game->betOptions();
-  }
+  char myChar;
 
-  void PlayerHand::process()
-  {
-    if (game->moreHandsToPlay())
-    {
-      game->playMoreHands();
-      return;
-    }
+  while (true) {
+    myChar = (char) getchar();
 
-    game->playDealerHand();
-    game->drawHands();
-    game->betOptions();
-  }
-
-  void PlayerHand::draw(unsigned index)
-  {
-    cout << " ";
-
-    for(unsigned i = 0; i < cards.size(); ++i)
-    {
-      cout << cards.at(i).toString() << " ";
-    }
-
-    cout << " ⇒  " << getValue(Soft) << "  ";
-
-    if (status == Hand::Lost)
-    {
-      cout << "-";
-    }
-    else if (status == Hand::Won)
-    {
-      cout << "+";
-    }
-
-    cout << fixed << setprecision(2);
-    cout << "$" << (float)(bet / 100.0);
-
-    if (!played && index == game->currentPlayerHand)
-    {
-      cout << " ⇐";
-    }
-
-    cout << "  ";
-
-    if (status == Lost)
-    {
-      if (isBusted())
-      {
-        cout << "Busted!";
-      }
-      else
-      {
-        cout << "Lose!";
-      }
-    }
-    else if (status == Won)
-    {
-      if (isBlackjack())
-      {
-        cout << "Blackjack!";
-      }
-      else
-      {
-        cout << "Won!";
-      }
-    }
-    else if (status == Push)
-    {
-      cout << "Push";
-    }
-
-    cout << endl << endl;
-  }
-
-  void PlayerHand::getAction()
-  {
-    cout << " ";
-
-    if (canHit())
-    {
-      cout << "(H) Hit  ";
-    }
-
-    if (canStand())
-    {
-      cout << "(S) Stand  ";
-    }
-
-    if (canSplit())
-    {
-      cout << "(P) Split  ";
-    }
-
-    if (canDbl())
-    {
-      cout << "(D) Double  ";
-    }
-    cout << endl;
-
-    bool br = false;
-    char myChar = { 0 };
-
-    while(true)
-    {
-      myChar = getchar();
-
-      switch(myChar)
-      {
-        case 'h':
-          br = true;
-          hit();
-          break;
-        case 's':
-          br = true;
-          stand();
-          break;
-        case 'p':
-          br = true;
-          game->splitCurrentHand();
-          break;
-        case 'd':
-          br = true;
-          dbl();
-          break;
-        default:
-          br = true;
-          game->clear();
-          game->drawHands();
-          getAction();
-      }
-
-      if (br)
-      {
+    switch (myChar) {
+      case 'h':;
+        hit();
         break;
-      }
+      case 's':;
+        stand();
+        break;
+      case 'p':;
+        game->splitCurrentHand();
+        break;
+      case 'd':;
+        dbl();
+        break;
+      default:;
+        Game::clear();
+        game->drawHands();
+        getAction();
     }
-  }
 
-  PlayerHand::~PlayerHand()
-  {
+    break;
   }
 }

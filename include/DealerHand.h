@@ -1,27 +1,29 @@
-#ifndef DEALERHAND_H_
-#define DEALERHAND_H_
+#ifndef DEALERHAND_H
+#define DEALERHAND_H
 
 #include <iostream>
 #include "Hand.h"
 #include "Card.h"
 
-namespace std
-{
-  class DealerHand: public Hand
-  {
-    using Hand::Hand;
+class DealerHand : public Hand {
+  using Hand::Hand;
 
-    public:
-      DealerHand();
-      DealerHand(Game* g);
-      virtual ~DealerHand();
-      bool upCardIsAce();
-      void draw();
-      bool isBusted();
+public:
+  DealerHand();
 
-      bool hideDownCard = true;
-      unsigned getValue(CountMethod);
-  };
-}
+  explicit DealerHand(Game *g);
+
+  ~DealerHand() override;
+
+  bool upCardIsAce();
+
+  void draw();
+
+  bool isBusted() override;
+
+  bool hideDownCard = true;
+
+  unsigned getValue(CountMethod);
+};
 
 #endif

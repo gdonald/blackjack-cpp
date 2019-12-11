@@ -1,69 +1,51 @@
 #include "DealerHand.h"
 
-namespace std
-{
-  DealerHand::DealerHand() : Hand(nullptr)
-  {
-  }
+DealerHand::~DealerHand() = default;
 
-  DealerHand::DealerHand(Game* g) : Hand(g)
-  {
-  }
+DealerHand::DealerHand() : Hand(nullptr) {}
 
-  bool DealerHand::isBusted()
-  {
-    return getValue(Soft) > 21;
-  }
-  
-  unsigned DealerHand::getValue(CountMethod countMethod)
-  {
-    unsigned v = 0;
-    unsigned total = 0;
+DealerHand::DealerHand(Game *g) : Hand(g) {}
 
-    for(unsigned x = 0; x < cards.size(); ++x)
-    {
-      if (x == 1 && hideDownCard)
-      {
-        continue;
-      }
+bool DealerHand::isBusted() {
+  return getValue(Soft) > 21;
+}
 
-      unsigned tmp_v = cards.at(x).value + 1;
-      v = tmp_v > 9 ? 10 : tmp_v;
+unsigned DealerHand::getValue(CountMethod countMethod) {
+  unsigned v = 0;
+  unsigned total = 0;
 
-      if (countMethod == Soft && v == 1 && total < 11)
-      {
-        v = 11;
-      }
-
-      total += v;
+  for (unsigned x = 0; x < cards.size(); ++x) {
+    if (x == 1 && hideDownCard) {
+      continue;
     }
 
-    if (countMethod == Soft && total > 21)
-    {
-      return getValue(Hard);
+    unsigned tmp_v = cards.at(x).value + 1;
+    v = tmp_v > 9 ? 10 : tmp_v;
+
+    if (countMethod == Soft && v == 1 && total < 11) {
+      v = 11;
     }
 
-    return total;
+    total += v;
   }
 
-  void DealerHand::draw()
-  {
-    cout << " ";
-
-    for(unsigned i = 0; i < cards.size(); ++i)
-    {
-      cout << (i == 1 && hideDownCard ? Card::faces[13][0] : cards[i].toString()) << " ";
-    }
-
-    cout << " ⇒  " << getValue(Soft);
+  if (countMethod == Soft && total > 21) {
+    return getValue(Hard);
   }
 
-  bool DealerHand::upCardIsAce()
-  {
-    return cards[0].isAce();
+  return total;
+}
+
+void DealerHand::draw() {
+  std::cout << " ";
+
+  for (unsigned i = 0; i < cards.size(); ++i) {
+    std::cout << (i == 1 && hideDownCard ? Card::faces[13][0] : cards[i].toString()) << " ";
   }
 
-  DealerHand::~DealerHand()
-  {
-  }
+  std::cout << " ⇒  " << getValue(Soft);
+}
+
+bool DealerHand::upCardIsAce() {
+  return cards[0].isAce();
 }
