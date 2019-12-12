@@ -1,22 +1,21 @@
-#ifndef BUFFERTOGGLE_H_
-#define BUFFERTOGGLE_H_
+#ifndef BUFFERTOGGLE_H
+#define BUFFERTOGGLE_H
 
 #include <termios.h>
 #include <unistd.h>
 
-namespace std
-{
-  class BufferToggle
-  {
-    public:
-      BufferToggle();
-      virtual ~BufferToggle();
-      void on(void);
-      void off(void);
+class BufferToggle {
+public:
+  BufferToggle();
 
-    private:
-      struct termios t;
-  };
-}
+  virtual ~BufferToggle();
+
+  void on();
+
+  void off();
+
+private:
+  struct termios t{};
+};
 
 #endif

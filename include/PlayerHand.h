@@ -1,51 +1,58 @@
-#ifndef PLAYERHAND_H_
-#define PLAYERHAND_H_
+#ifndef PLAYERHAND_H
+#define PLAYERHAND_H
 
 #include <iostream>
 #include <string>
 #include <sstream>
 #include "Hand.h"
 
-namespace std
-{
-  class Game;
+class Game;
 
-  class PlayerHand: public Hand
-  {
-      using Hand::Hand;
+class PlayerHand : public Hand {
+  using Hand::Hand;
 
-    public:
-      const static unsigned MAX_PLAYER_HANDS = 7;
-      static unsigned totalPlayerHands;
-      unsigned bet;
-      Status status;
-      bool payed;
+public:
+  const static unsigned MAX_PLAYER_HANDS = 7;
+  static unsigned totalPlayerHands;
+  unsigned bet{};
+  Status status;
+  bool payed{};
 
-      PlayerHand();
-      PlayerHand(Game* g, unsigned b) : Hand(g), bet(b)
-      {
-        ++totalPlayerHands;
-        status = Unknown;
-        payed = false;
-      };
+  explicit PlayerHand(Game *g);
 
-      virtual ~PlayerHand();
-      void getAction();
-      void hit();
-      void dbl();
-      void stand();
-      bool canSplit();
-      bool canDbl();
-      bool canStand();
-      bool canHit();
-      bool isDone();
-      bool isBusted();
-      
-      void draw(unsigned index);
-      void process();
-
-      unsigned getValue(CountMethod);
+  PlayerHand(Game *g, unsigned b) : Hand(g), bet(b) {
+    ++totalPlayerHands;
+    status = Unknown;
+    payed = false;
   };
-}
+
+  ~PlayerHand() override;
+
+  void getAction();
+
+  void hit();
+
+  void dbl();
+
+  void stand();
+
+  bool canSplit();
+
+  bool canDbl();
+
+  bool canStand();
+
+  bool canHit();
+
+  bool isDone() override;
+
+  bool isBusted() override;
+
+  void draw(unsigned index);
+
+  void process();
+
+  unsigned getValue(CountMethod);
+};
 
 #endif
