@@ -43,9 +43,9 @@ void Shoe::newAcesJacks() {
   cards.clear();
 
   for (unsigned deck = 0; deck < numDecks * 50; ++deck) {
-    for (unsigned suite = 0; suite < 4; ++suite) {
-      cards.emplace_back(0, suite);
-      cards.emplace_back(10, suite);
+    for (unsigned suit = 0; suit < 4; ++suit) {
+      cards.emplace_back(0, suit);
+      cards.emplace_back(10, suit);
     }
   }
 
@@ -56,8 +56,8 @@ void Shoe::newJacks() {
   cards.clear();
 
   for (unsigned deck = 0; deck < numDecks * 100; ++deck) {
-    for (unsigned suite = 0; suite < 4; ++suite) {
-      cards.emplace_back(10, suite);
+    for (unsigned suit = 0; suit < 4; ++suit) {
+      cards.emplace_back(10, suit);
     }
   }
 }
@@ -67,8 +67,8 @@ void Shoe::newAces() {
   std::cout << "cards.size(): " << cards.size() << std::endl;
 
   for (unsigned deck = 0; deck < numDecks * 100; ++deck) {
-    for (unsigned suite = 0; suite < 4; ++suite) {
-      cards.emplace_back(0, suite);
+    for (unsigned suit = 0; suit < 4; ++suit) {
+      cards.emplace_back(0, suit);
     }
   }
 
@@ -79,8 +79,8 @@ void Shoe::newSevens() {
   cards.clear();
 
   for (unsigned deck = 0; deck < numDecks * 100; ++deck) {
-    for (unsigned suite = 0; suite < 4; ++suite) {
-      cards.emplace_back(6, suite);
+    for (unsigned suit = 0; suit < 4; ++suit) {
+      cards.emplace_back(6, suit);
     }
   }
 }
@@ -89,8 +89,8 @@ void Shoe::newEights() {
   cards.clear();
 
   for (unsigned deck = 0; deck < numDecks * 100; ++deck) {
-    for (unsigned suite = 0; suite < 4; ++suite) {
-      cards.emplace_back(7, suite);
+    for (unsigned suit = 0; suit < 4; ++suit) {
+      cards.emplace_back(7, suit);
     }
   }
 }
@@ -100,9 +100,9 @@ void Shoe::newRegular() {
   cards.clear();
 
   for (unsigned deck = 0; deck < numDecks; ++deck) {
-    for (unsigned suite = 0; suite < 4; ++suite) {
+    for (unsigned suit = 0; suit < 4; ++suit) {
       for (unsigned value = 0; value < 13; ++value) {
-        cards.emplace_back(value, suite);
+        cards.emplace_back(value, suit);
       }
     }
   }

@@ -9,7 +9,7 @@ public:
   static const char *const faces[14][4];
 
   unsigned value{};
-  unsigned suiteValue{};
+  unsigned suitValue{};
 
   Card(unsigned v, unsigned sv);
 

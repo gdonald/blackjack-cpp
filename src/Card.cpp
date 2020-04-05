@@ -19,11 +19,11 @@ Card::~Card() = default;
 
 Card::Card(unsigned v, unsigned sv) {
   value = v;
-  suiteValue = sv;
+  suitValue = sv;
 }
 
 std::string Card::toString() {
-  return Card::faces[value][suiteValue];
+  return Card::faces[value][suitValue];
 }
 
 bool Card::isAce() { return value == 0; }
