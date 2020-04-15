@@ -18,7 +18,8 @@ Shoe::Shoe(unsigned nd) : numDecks(nd) {}
 bool Shoe::needToShuffle() {
   if (cards.empty()) { return true; }
 
-  unsigned cardsDealt = cards.size() - cards.size();
+  unsigned totalCards = numDecks * 52;
+  unsigned cardsDealt = totalCards - cards.size();
   auto used = (unsigned) ((cardsDealt / (double) cards.size()) * 100.0);
 
   for (auto shuffleSpec : Shoe::shuffleSpecs) {
