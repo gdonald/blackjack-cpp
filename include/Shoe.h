@@ -13,7 +13,7 @@ private:
   std::vector <Card> cards;
 
 public:
-  static const unsigned shuffleSpecs[8][2];
+  static const unsigned shuffleSpecs[8];
 
   Shoe();
 

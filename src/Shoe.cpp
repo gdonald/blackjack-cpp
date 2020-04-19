@@ -1,13 +1,6 @@
 #include "Shoe.h"
 
-const unsigned Shoe::shuffleSpecs[8][2] = {{95, 8},
-                                           {92, 7},
-                                           {89, 6},
-                                           {86, 5},
-                                           {84, 4},
-                                           {82, 3},
-                                           {81, 2},
-                                           {80, 1}};
+const unsigned Shoe::shuffleSpecs[] = {80, 81, 82, 84, 86, 89, 92, 95};
 
 Shoe::~Shoe() = default;
 
@@ -18,17 +11,12 @@ Shoe::Shoe(unsigned nd) : numDecks(nd) {}
 bool Shoe::needToShuffle() {
   if (cards.empty()) { return true; }
 
-  unsigned totalCards = numDecks * 52;
-  unsigned cardsDealt = totalCards - cards.size();
+  auto totalCards = numDecks * 52;
+  auto cardsDealt = totalCards - cards.size();
   auto used = (unsigned) ((cardsDealt / (double) cards.size()) * 100.0);
+  auto shuffleSpec = Shoe::shuffleSpecs[numDecks - 1];
 
-  for (auto shuffleSpec : Shoe::shuffleSpecs) {
-    if (used > shuffleSpec[0] && numDecks == shuffleSpec[1]) {
-      return true;
-    }
-  }
-
-  return false;
+  return used > shuffleSpec;
 }
 
 void Shoe::shuffle() {
