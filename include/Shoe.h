@@ -9,21 +9,9 @@
 
 class Shoe {
 private:
-  unsigned numDecks;
-  std::vector <Card> cards;
+  std::vector<Card> cards;
 
-public:
-  static const unsigned shuffleSpecs[8];
-
-  Shoe();
-
-  explicit Shoe(unsigned nd);
-
-  virtual ~Shoe();
-
-  bool needToShuffle();
-
-  void shuffle();
+  void newShoe(std::vector<int> values);
 
   void newRegular();
 
@@ -37,7 +25,24 @@ public:
 
   void newAcesJacks();
 
+public:
+  static const unsigned shuffleSpecs[8];
+  static const unsigned CARDS_PER_DECK;
+  static unsigned numDecks;
+
+  Shoe();
+
+  virtual ~Shoe();
+
+  bool needToShuffle();
+
+  void shuffle();
+
+  void buildNewShoe(unsigned deckType);
+
   Card getNextCard();
+
+  [[nodiscard]] unsigned getTotalCards() const;
 };
 
 #endif

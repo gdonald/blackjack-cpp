@@ -1,22 +1,25 @@
 #include "Shoe.h"
 
 const unsigned Shoe::shuffleSpecs[] = {80, 81, 82, 84, 86, 89, 92, 95};
+const unsigned Shoe::CARDS_PER_DECK = 52;
+unsigned Shoe::numDecks = 8;
+
+Shoe::Shoe() = default;
 
 Shoe::~Shoe() = default;
-
-Shoe::Shoe() { numDecks = 1; }
-
-Shoe::Shoe(unsigned nd) : numDecks(nd) {}
 
 bool Shoe::needToShuffle() {
   if (cards.empty()) { return true; }
 
-  auto totalCards = numDecks * 52;
-  auto cardsDealt = totalCards - cards.size();
+  auto cardsDealt = getTotalCards() - cards.size();
   auto used = (unsigned) ((cardsDealt / (double) cards.size()) * 100.0);
   auto shuffleSpec = Shoe::shuffleSpecs[numDecks - 1];
 
   return used > shuffleSpec;
+}
+
+unsigned int Shoe::getTotalCards() const {
+  return Shoe::numDecks * CARDS_PER_DECK;
 }
 
 void Shoe::shuffle() {
@@ -28,71 +31,71 @@ void Shoe::shuffle() {
   }
 }
 
-void Shoe::newAcesJacks() {
-  cards.clear();
-
-  for (unsigned deck = 0; deck < numDecks * 50; ++deck) {
-    for (unsigned suit = 0; suit < 4; ++suit) {
-      cards.emplace_back(0, suit);
-      cards.emplace_back(10, suit);
-    }
+void Shoe::buildNewShoe(unsigned deckType) {
+  switch (deckType) {
+    case 2:
+      newAces();
+      break;
+    case 3:
+      newJacks();
+      break;
+    case 4:
+      newAcesJacks();
+      break;
+    case 5:
+      newSevens();
+      break;
+    case 6:
+      newEights();
+      break;
+    default:
+      newRegular();
   }
+}
 
-  shuffle();
+void Shoe::newAcesJacks() {
+  std::vector<int> values{0, 10};
+  Shoe::newShoe(values);
 }
 
 void Shoe::newJacks() {
-  cards.clear();
-
-  for (unsigned deck = 0; deck < numDecks * 100; ++deck) {
-    for (unsigned suit = 0; suit < 4; ++suit) {
-      cards.emplace_back(10, suit);
-    }
-  }
+  std::vector<int> values{10};
+  newShoe(values);
 }
 
 void Shoe::newAces() {
-  cards.clear();
-  std::cout << "cards.size(): " << cards.size() << std::endl;
-
-  for (unsigned deck = 0; deck < numDecks * 100; ++deck) {
-    for (unsigned suit = 0; suit < 4; ++suit) {
-      cards.emplace_back(0, suit);
-    }
-  }
-
-  std::cout << "cards.size(): " << cards.size() << std::endl;
+  std::vector<int> values{0};
+  newShoe(values);
 }
 
 void Shoe::newSevens() {
-  cards.clear();
-
-  for (unsigned deck = 0; deck < numDecks * 100; ++deck) {
-    for (unsigned suit = 0; suit < 4; ++suit) {
-      cards.emplace_back(6, suit);
-    }
-  }
+  std::vector<int> values{6};
+  newShoe(values);
 }
 
 void Shoe::newEights() {
-  cards.clear();
-
-  for (unsigned deck = 0; deck < numDecks * 100; ++deck) {
-    for (unsigned suit = 0; suit < 4; ++suit) {
-      cards.emplace_back(7, suit);
-    }
-  }
+  std::vector<int> values{7};
+  newShoe(values);
 }
 
 void Shoe::newRegular() {
-  std::cout << "Shoe::newRegular(): " << std::endl;
-  cards.clear();
+  std::vector<int> values{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+  newShoe(values);
+}
 
-  for (unsigned deck = 0; deck < numDecks; ++deck) {
+void Shoe::newShoe(std::vector<int> values) {
+  cards.clear();
+  auto totalCards = getTotalCards();
+
+  while (cards.size() < totalCards) {
     for (unsigned suit = 0; suit < 4; ++suit) {
-      for (unsigned value = 0; value < 13; ++value) {
-        cards.emplace_back(value, suit);
+      if (cards.size() >= totalCards) {
+        break;
       }
+
+      std::for_each(values.begin(), values.end(), [this, &suit](int &value) {
+        cards.emplace_back(value, suit);
+      });
     }
   }
 

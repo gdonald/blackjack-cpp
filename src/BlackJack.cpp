@@ -1,8 +1,7 @@
 #include "BufferToggle.h"
 #include "Game.h"
 
-int main()
-{
+int main() {
   BufferToggle bt;
   int run = 0;
 

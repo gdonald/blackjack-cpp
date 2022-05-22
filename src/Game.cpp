@@ -3,25 +3,26 @@
 const char *const Game::SAVE_FILE = "bj.txt";
 
 Game::Game() {
-  numDecks = 1;
+  deckType = 1;
   money = 10000;
   currentBet = 500;
+  quitting = false;
 
   loadGame();
 
-  shoe = Shoe(numDecks);
-  dealerHand = DealerHand(this);
+  shoe = Shoe();
 
+  dealerHand = DealerHand(this);
   currentPlayerHand = 0;
   playerHands = {};
 }
 
 Game::~Game() = default;
 
-int Game::allBets() {
-  uint allBets = 0;
+unsigned Game::allBets() {
+  unsigned allBets = 0;
 
-  for (auto & playerHand : playerHands) {
+  for (auto &playerHand: playerHands) {
     allBets += playerHand.bet;
   }
 
@@ -59,8 +60,7 @@ void Game::clear() {
 
 void Game::dealNewHand() {
   if (shoe.needToShuffle()) {
-    std::cout << "omg, reshuffling!" << std::endl;
-    shoe.newRegular();
+    shoe.buildNewShoe(deckType);
   }
 
   playerHands = {};
@@ -122,7 +122,6 @@ void Game::betOptions() {
 
     switch (myChar) {
       case 'd':
-        dealNewHand();
         break;
       case 'b':
         getNewBet();
@@ -132,6 +131,7 @@ void Game::betOptions() {
         break;
       case 'q':
         clear();
+        quitting = true;
         break;
       default:
         clear();
@@ -148,7 +148,7 @@ void Game::gameOptions() {
 
   clear();
   drawHands();
-  std::cout << " (N) Number of Decks  (T) Deck Type  (B) Back" << std::endl;
+  std::cout << " (N) Number of Decks  (T) Deck Type  (F) Face Type  (B) Back" << std::endl;
 
   while (true) {
     myChar = (char) getchar();
@@ -159,6 +159,9 @@ void Game::gameOptions() {
         break;
       case 't':
         getNewDeckType();
+        break;
+      case 'f':
+        getNewFaceType();
         break;
       case 'b':
         clear();
@@ -184,35 +187,52 @@ void Game::getNewDeckType() {
 
   while (true) {
     myChar = (char) getchar();
+    deckType = myChar - '0';
 
-    std::cout << "myChar: " << myChar << std::endl;
+    if (deckType > 0 && deckType < 7) {
+      if (deckType > 1) {
+        Shoe::numDecks = 8;
+      }
+
+      shoe.buildNewShoe(deckType);
+    } else {
+      clear();
+      drawHands();
+      getNewDeckType();
+      return;
+    }
+
+    saveGame();
+    drawHands();
+    betOptions();
+    break;
+  }
+}
+
+void Game::getNewFaceType() {
+  char myChar;
+
+  clear();
+  drawHands();
+  std::cout << " (1) A♠  (2) 🂡" << std::endl;
+
+  while (true) {
+    myChar = (char) getchar();
 
     switch (myChar) {
       case '1':
-        shoe.newRegular();
+        Card::faceType = 1;
         break;
       case '2':
-        std::cout << "shoe.newAces()" << std::endl;
-        shoe.newAces();
-        break;
-      case '3':
-        shoe.newJacks();
-        break;
-      case '4':
-        shoe.newAcesJacks();
-        break;
-      case '5':
-        shoe.newSevens();
-        break;
-      case '6':
-        shoe.newEights();
+        Card::faceType = 2;
         break;
       default:
         clear();
         drawHands();
-        gameOptions();
+        getNewFaceType();
     }
 
+    saveGame();
     drawHands();
     betOptions();
     break;
@@ -237,14 +257,14 @@ void Game::getNewNumDecks() {
   clear();
   drawHands();
 
-  std::cout << "  Number Of Decks: " << numDecks << std::endl << "  Enter New Number Of Decks: ";
+  std::cout << "  Number Of Decks: " << Shoe::numDecks << std::endl << "  Enter New Number Of Decks: ";
   unsigned tmp;
   std::cin >> tmp;
 
   if (tmp < 1) tmp = 1;
   if (tmp > 8) tmp = 8;
 
-  numDecks = tmp;
+  Shoe::numDecks = tmp;
   gameOptions();
 }
 
@@ -262,12 +282,12 @@ void Game::insureHand() {
   betOptions();
 }
 
-bool Game::moreHandsToPlay() {
+bool Game::moreHandsToPlay() const {
   return currentPlayerHand < playerHands.size() - 1;
 }
 
 bool Game::needToPlayDealerHand() {
-  for (auto & playerHand : playerHands) {
+  for (auto &playerHand: playerHands) {
     PlayerHand *h = &playerHand;
 
     if (!(h->isBusted() || h->isBlackjack())) {
@@ -317,7 +337,7 @@ void Game::payHands() {
   unsigned dhv = dealerHand.getValue(Hand::Soft);
   bool dhb = dealerHand.isBusted();
 
-  for (auto & playerHand : playerHands) {
+  for (auto &playerHand: playerHands) {
     PlayerHand *h = &playerHand;
 
     if (h->payed) {
@@ -386,16 +406,19 @@ void Game::playMoreHands() {
 }
 
 int Game::run() {
-  dealNewHand();
+  while (!quitting) {
+    dealNewHand();
+  }
   return 0;
 }
 
-void Game::saveGame() {
+void Game::saveGame() const {
   std::ofstream saveFile;
   saveFile.open(Game::SAVE_FILE);
 
   if (saveFile.is_open()) {
-    saveFile << numDecks << "|" << money << "|" << currentBet << std::endl;
+    saveFile << Shoe::numDecks << "|" << money << "|" << currentBet << "|" << deckType << "|" << Card::faceType
+             << std::endl;
     saveFile.close();
   } else {
     std::cout << "Could not open file: " << Game::SAVE_FILE << std::endl;
@@ -411,7 +434,7 @@ void Game::loadGame() {
     getline(saveFile, line);
     saveFile.close();
 
-    std::vector <std::string> elems;
+    std::vector<std::string> elems;
     std::stringstream ss;
     ss.str(line);
     std::string item;
@@ -419,9 +442,11 @@ void Game::loadGame() {
       elems.push_back(item);
     }
 
-    numDecks = (unsigned) stoul(elems[0]);
+    Shoe::numDecks = (unsigned) stoul(elems[0]);
     money = (unsigned) stoul(elems[1]);
     currentBet = (unsigned) stoul(elems[2]);
+    deckType = (unsigned) stoul(elems[3]);
+    Card::faceType = (unsigned) stoul(elems[4]);
   }
 
   if (money < MIN_BET) {

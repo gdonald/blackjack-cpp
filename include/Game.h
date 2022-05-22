@@ -13,8 +13,6 @@
 #include "Shoe.h"
 
 class Game {
-private:
-  unsigned numDecks;
 
 public:
   const static unsigned MIN_BET = 500;
@@ -27,16 +25,18 @@ public:
 
   Shoe shoe;
   DealerHand dealerHand;
-  std::vector <PlayerHand> playerHands;
+  std::vector<PlayerHand> playerHands;
   unsigned currentPlayerHand;
   unsigned currentBet;
   unsigned money;
+  bool quitting;
+  unsigned deckType;
 
   int run();
 
-  int allBets();
+  unsigned allBets();
 
-  bool moreHandsToPlay();
+  [[nodiscard]] bool moreHandsToPlay() const;
 
   bool needToPlayDealerHand();
 
@@ -66,11 +66,13 @@ public:
 
   void getNewDeckType();
 
+  void getNewFaceType();
+
   void getNewBet();
 
   void normalizeCurrentBet();
 
-  void saveGame();
+  void saveGame() const;
 
   void loadGame();
 

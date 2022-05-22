@@ -17,7 +17,7 @@ unsigned PlayerHand::getValue(CountMethod countMethod) {
   unsigned v = 0;
   unsigned total = 0;
 
-  for (auto &card : cards) {
+  for (auto &card: cards) {
     unsigned tmp_v = card.value + 1;
     v = tmp_v > 9 ? 10 : tmp_v;
 
@@ -124,7 +124,7 @@ void PlayerHand::process() {
 void PlayerHand::draw(unsigned index) {
   std::cout << " ";
 
-  for (auto &card : cards) {
+  for (auto &card: cards) {
     std::cout << card.toString() << " ";
   }
 

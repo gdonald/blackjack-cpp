@@ -7,6 +7,8 @@
 class Card {
 public:
   static const char *const faces[14][4];
+  static const char *const faces2[14][4];
+  static unsigned faceType;
 
   unsigned value{};
   unsigned suitValue{};
@@ -15,11 +17,11 @@ public:
 
   ~Card();
 
-  bool isAce();
+  [[nodiscard]] bool isAce() const;
 
-  bool isTen();
+  [[nodiscard]] bool isTen() const;
 
-  std::string toString();
+  [[nodiscard]] std::string toString() const;
 };
 
 #endif
