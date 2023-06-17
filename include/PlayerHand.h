@@ -16,14 +16,14 @@ public:
   static unsigned totalPlayerHands;
   unsigned bet{};
   Status status;
-  bool payed{};
+  bool paid{};
 
   explicit PlayerHand(Game *g);
 
   PlayerHand(Game *g, unsigned b) : Hand(g), bet(b) {
     ++totalPlayerHands;
     status = Unknown;
-    payed = false;
+    paid = false;
   };
 
   ~PlayerHand() override;

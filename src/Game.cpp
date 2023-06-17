@@ -273,7 +273,7 @@ void Game::insureHand() {
 
   h->bet /= 2;
   h->played = true;
-  h->payed = true;
+  h->paid = true;
   h->status = Hand::Lost;
 
   money -= h->bet;
@@ -340,11 +340,11 @@ void Game::payHands() {
   for (auto &playerHand: playerHands) {
     PlayerHand *h = &playerHand;
 
-    if (h->payed) {
+    if (h->paid) {
       continue;
     }
 
-    h->payed = true;
+    h->paid = true;
 
     unsigned phv = h->getValue(Hand::Soft);
 

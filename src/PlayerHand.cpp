@@ -39,9 +39,9 @@ bool PlayerHand::isDone() {
   if (played || stood || isBlackjack() || isBusted() || 21 == getValue(Soft) || 21 == getValue(Hard)) {
     played = true;
 
-    if (!payed) {
+    if (!paid) {
       if (isBusted()) {
-        payed = true;
+        paid = true;
         status = Lost;
         game->money -= bet;
       }
